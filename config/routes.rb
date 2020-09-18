@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  devise_for :clients
-  devise_for :staffs
+  devise_for :clients, skip: :registrations
+  devise_for :staffs, skip: :registrations
 
   resources :clients, only: :index
   resources :staffs, only: :index
