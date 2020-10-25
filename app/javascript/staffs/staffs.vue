@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    navbar(:logo="logo" :current_user="current_user")
+    navbar(:current_user="current_user" @logout="logout")
     p {{ message }}
 </template>
 
@@ -8,17 +8,35 @@
 import Navbar from './components/navbar.vue'
 
 export default {
-  data: function () {
+  data () {
     return {
       message: "Staffs list",
-      current_user: 'Test user',
-      logo: 'assets/logo.png'
+      logo: null,
+      current_user: null
     }
+  },
+  created () {
+    this.loadCurrentUser();
   },
   components: {
     Navbar
+  },
+  methods: {
+    loadCurrentUser () {
+      this.$api.get('/staffs/me')
+      .then(({ data }) => {
+        this.current_user = data.email
+      })
+    },
+    logout () {
+      this.$api.delete('/staffs/sign_out.json')
+      .then(() => {
+        this.current_user = null
+      })
+    }
   }
 }
+
 </script>
 
 <style scoped>
