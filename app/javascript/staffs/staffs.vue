@@ -1,16 +1,16 @@
 <template lang="pug">
   div
     navbar(:current_user="current_user" @logout="logout")
-    p {{ message }}
+    dashboard(v-if="current_user")
 </template>
 
 <script>
 import Navbar from './components/navbar.vue'
+import Dashboard from './components/dashboard.vue'
 
 export default {
   data () {
     return {
-      message: "Staffs list",
       logo: null,
       current_user: null
     }
@@ -19,7 +19,8 @@ export default {
     this.loadCurrentUser();
   },
   components: {
-    Navbar
+    Navbar,
+    Dashboard
   },
   methods: {
     loadCurrentUser () {

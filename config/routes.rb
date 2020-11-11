@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   devise_for :clients, skip: :registrations
   devise_for :staffs, skip: :registrations
 
-  resources :clients, only: :index
+  resources :clients, only: [:index, :create]
+  
   resources :staffs, only: :index do
     get :me, on: :collection
   end
