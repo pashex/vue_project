@@ -9,8 +9,9 @@
           input(v-model.lazy="new_client.phone" placeholder="Enter client's phone")
         p
           input(v-model.lazy="new_client.email" placeholder="Enter client's email")
-        p
+        p(v-show="!loadings.new_client")
           a(@click="submit") Add
+        p(v-show="loadings.new_client") Loading...
 
       template(v-if="errors.length")
         p Errors
@@ -20,11 +21,12 @@
 
       template(v-if="clients.length")
         p Clients list
-        ul
+        ul(v-show="!loadings.list")
           li(v-for="client in clients" :key="client.id")
             div {{ client.fullname }}
             div {{ client.phone }}
             div {{ client.email }}
+        p(v-show="loadings.list") Loading...
 
 </template>
 
@@ -35,7 +37,7 @@ export default {
   data () {
     return {
       new_client: { email: '' },
-      loading: false,
+      loadings: { new_client: false, list: false },
       errors: [],
       clients: []
     }
@@ -45,6 +47,8 @@ export default {
       this.errors = this.validateClientForm()
 
       if (!this.errors.length) {
+        this.loadings.new_client = true
+
         this.$api.post('/clients', { client: this.new_client })
         .then(({ data }) => {
           this.new_client = { email: '' }
@@ -54,15 +58,23 @@ export default {
         .catch(({ response }) => {
           this.errors = response.data.errors
         })
+        .finally(() => {
+          this.loadings.new_client = false
+        })
       }
     },
     loadClients () {
+      this.loadings.list = true
+
       this.$api.get('/clients.json')
       .then(({ data }) => {
         this.clients = data
       })
       .catch(() => {
         this.errors = true
+      })
+      .finally(() => {
+        this.loadings.list = false
       })
     },
     validateClientForm () {
