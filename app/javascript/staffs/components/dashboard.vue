@@ -4,13 +4,19 @@
       p Add new Client
       form
         p
-          input(v-model="new_client.fullname" placeholder="Enter client's fullname")
+          input(v-model.lazy="new_client.fullname" placeholder="Enter client's fullname")
         p
-          input(v-model="new_client.phone" placeholder="Enter client's phone")
+          input(v-model.lazy="new_client.phone" placeholder="Enter client's phone")
         p
-          input(v-model="new_client.email" placeholder="Enter client's email")
+          input(v-model.lazy="new_client.email" placeholder="Enter client's email")
         p
           a(@click="submit") Add
+
+      template(v-if="errors.length")
+        p Errors
+        ul
+          li(v-for="error in errors")
+            div {{ error }}
 
       template(v-if="clients.length")
         p Clients list
@@ -29,25 +35,64 @@ export default {
   data () {
     return {
       new_client: { email: '' },
+      loading: false,
+      errors: [],
       clients: []
     }
   },
   methods: {
     submit () {
-      this.$api.post('/clients', { client: this.new_client })
-      .then(({ data }) => {
-        this.new_client = { email: '' }
-        this.clients.push(data)
-      })
-      .catch(({ response }) => {
-        console.log(response)
-      })
+      this.errors = this.validateClientForm()
+
+      if (!this.errors.length) {
+        this.$api.post('/clients', { client: this.new_client })
+        .then(({ data }) => {
+          this.new_client = { email: '' }
+          this.errors = []
+          this.clients.push(data)
+        })
+        .catch(({ response }) => {
+          this.errors = response.data.errors
+        })
+      }
     },
     loadClients () {
       this.$api.get('/clients.json')
       .then(({ data }) => {
         this.clients = data
       })
+      .catch(() => {
+        this.errors = true
+      })
+    },
+    validateClientForm () {
+      let errors = []
+      errors.push(this.fullnameError())
+      errors.push(this.phoneError())
+      errors.push(this.emailError())
+
+      return errors.filter(n => n)
+    },
+    fullnameError () {
+      if (this.new_client.fullname.length < 5) {
+        return "Fullname must be 5 characters minimum"
+      }
+    },
+    phoneError () {
+      if (!this.new_client.phone) {
+        return "Phone cat't be blank"
+      }
+      if (!/^\d+$/.test(this.new_client.phone)) {
+        return "Phone must contain digits only"
+      }
+    },
+    emailError () {
+      if (!this.new_client.email) {
+        return "Email cat't be blank"
+      }
+      if (!/^\S+@\S+\.\S+$/.test(this.new_client.email)) {
+        return "Email must be valid email address"
+      }
     }
   },
   created () {
