@@ -2,8 +2,10 @@ Rails.application.routes.draw do
   devise_for :clients, skip: :registrations
   devise_for :staffs, skip: :registrations
 
-  resources :clients, only: [:index, :create]
-
+  resources :clients, only: [:index, :create] do
+    post :check_valid, on: :collection
+  end
+  
   resources :staffs, only: :index do
     get :me, on: :collection
   end

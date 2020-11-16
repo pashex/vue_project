@@ -12,7 +12,8 @@ const api = {
   },
   clients: {
     index: () => axios.get('/clients'),
-    create: params => axios.post('/clients', { client: params })
+    create: params => axios.post('/clients', { client: params }),
+    checkValid: params => axios.post('/clients/check_valid', { client: params })
   }
 }
 

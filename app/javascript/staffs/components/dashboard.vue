@@ -5,9 +5,9 @@
       p
         input(v-model.lazy="new_client.fullname" placeholder="Enter client's fullname")
       p
-        input(v-model.lazy="new_client.phone" placeholder="Enter client's phone")
+        input(v-model.lazy="new_client.phone" @blur="checkValid('phone')" placeholder="Enter client's phone")
       p
-        input(v-model.lazy="new_client.email" placeholder="Enter client's email")
+        input(v-model.lazy="new_client.email" @blur="checkValid('email')" placeholder="Enter client's email")
       p(v-show="!loadings.new_client")
         a(@click="submit") Add
       p(v-show="loadings.new_client") Loading...
@@ -59,6 +59,17 @@ export default {
         })
         .finally(() => {
           this.loadings.new_client = false
+        })
+      }
+    },
+    checkValid (field) {
+      if (this.new_client[field].length) {
+        this.errors = []
+
+        this.$api.clients.checkValid(this.new_client)
+        .catch(({ response }) => {
+          console.log(response.data.errors[field])
+          this.errors = response.data.errors[field].map(err => `${field} ${err}`)
         })
       }
     },
