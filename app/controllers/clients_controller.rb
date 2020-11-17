@@ -1,7 +1,7 @@
 class ClientsController < ApplicationController
   layout 'clients'
 
-  before_action :check_staff, on: :create
+  before_action :check_staff, only: :create
 
   def index
     respond_to do |format|

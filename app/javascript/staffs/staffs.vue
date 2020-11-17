@@ -24,13 +24,13 @@ export default {
   },
   methods: {
     loadCurrentUser () {
-      this.$api.get('/staffs/me')
+      this.$api.staffs.me()
       .then(({ data }) => {
         this.current_user = data.email
       })
     },
     logout () {
-      this.$api.delete('/staffs/sign_out.json')
+      this.$api.staffs.logout()
       .then(() => {
         this.current_user = null
       })

@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     loadLogo () {
-      this.$api.get('/asset_path', { params: { filename: 'logo.png' } })
+      this.$api.application.loadLogo()
       .then(({ data }) => {
         this.logo = data
       })
@@ -34,7 +34,3 @@ export default {
 }
 
 </script>
-
-<style scoped>
-
-</style>
